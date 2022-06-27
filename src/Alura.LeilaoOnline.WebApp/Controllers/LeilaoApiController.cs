@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Alura.LeilaoOnline.WebApp.Models;
-using Alura.LeilaoOnline.WebApp.Dados;
+using Alura.LeilaoOnline.WebApp.Services;
 
 namespace Alura.LeilaoOnline.WebApp.Controllers
 {
@@ -8,25 +8,25 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
     [Route("/api/leiloes")]
     public class LeilaoApiController : ControllerBase
     {
-        ILeilaoDAO _leilaoDAO;
+        IAdminService _service;
 
-        public LeilaoApiController(ILeilaoDAO leilaoDAO)
+        public LeilaoApiController(IAdminService service)
         {
-            _leilaoDAO = leilaoDAO;
+            _service = service;
         }
-        
+
 
         [HttpGet]
         public IActionResult EndpointGetLeiloes()
         {
-            var leiloes = _leilaoDAO.BuscarLeiloes();
+            var leiloes = _service.ConsultaLeiloes();
             return Ok(leiloes);
         }
 
         [HttpGet("{id}")]
         public IActionResult EndpointGetLeilaoById(int id)
         {
-            var leilao = _leilaoDAO.BuscarPorId(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null)
             {
                 return NotFound();
@@ -37,26 +37,26 @@ namespace Alura.LeilaoOnline.WebApp.Controllers
         [HttpPost]
         public IActionResult EndpointPostLeilao(Leilao leilao)
         {
-            _leilaoDAO.Incluir(leilao);
+            _service.CadastraLeilao(leilao);
             return Ok(leilao);
         }
 
         [HttpPut]
         public IActionResult EndpointPutLeilao(Leilao leilao)
         {
-            _leilaoDAO.Alterar(leilao);
+            _service.ModificaLeilao(leilao);
             return Ok(leilao);
         }
 
         [HttpDelete("{id}")]
         public IActionResult EndpointDeleteLeilao(int id)
         {
-            var leilao = _leilaoDAO.BuscarPorId(id);
+            var leilao = _service.ConsultaLeilaoPorId(id);
             if (leilao == null)
             {
                 return NotFound();
             }
-            _leilaoDAO.Excluir(leilao);
+            _service.RemoveLeilao(leilao);
             return NoContent();
         }
 
